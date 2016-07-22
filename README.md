@@ -22,60 +22,60 @@ Now, the methods in the utils include :
 
 # how to use
 
-layer
-{
-
-  name: "data"
-  
-  type: "ImageData"
-  
-  top:  "data"
-  
-  top: "label"
-  
-  include {
-  
-    phase: TRAIN
-    
-  }
-  
-  transform_param
-  {
-    mirror: true
-    
-    crop_size: 227
-    
-    mean_file: "imagenet_mean.binaryproto"
-    
-    color: true
-    
-    contrast: true
-    
-    brightness: true
-    
-    rotation_angle_interval: 10
-    
-    # show_augment_info: true
-    
-    # dir_to_save_augmented_imgs: "path"
-    
-  }
-
-  image_data_param
-  
+  layer
   {
 
-    source: "/home/your/image/list.txt"
-
-    batch_size: 32
-
-    shuffle:true
-
-    new_height:256
-
-    new_width: 256
+    name: "data"
+  
+    type: "ImageData"
+  
+    top:  "data"
+  
+    top: "label"
+  
+    include {
+  
+      phase: TRAIN
+      
+    }
+  
+    transform_param
+    {
+      mirror: true
+    
+      crop_size: 227
+    
+      mean_file: "imagenet_mean.binaryproto"
+    
+      color: true
+    
+      contrast: true
+    
+      brightness: true
+    
+      rotation_angle_interval: 10
+    
+      # show_augment_info: true
+    
+      # dir_to_save_augmented_imgs: "path"
     
   }
+
+    image_data_param
+  
+    {
+
+      source: "/home/your/image/list.txt"
+
+      batch_size: 32
+
+      shuffle:true
+
+      new_height:256
+
+      new_width: 256
+    
+    }
   
 }
 
@@ -83,41 +83,41 @@ layer
 
 1  add two files
 
-  1)  data_augment.hpp --> include/caffe/util/
+    1)  data_augment.hpp --> include/caffe/util/
 
-  2)  data_augment.cpp --> src/caffe/util/
+    2)  data_augment.cpp --> src/caffe/util/
 
 2  modify include/caffe/data_transformer.hpp
 
-  1)  #include "caffe/util/data_augment.hpp"
+    1) + #include "caffe/util/data_augment.hpp"
 
-  2)  protected: 
+    2)  protected: 
 
-      +  DataAugmenter<Dtype> aug_;
+        +  DataAugmenter<Dtype> aug_;
 
 3  modify src/caffe/data_transformer.cpp
 
-  1)  template<typename Dtype> DataTransformer<Dtype>::
-  DataTransformer(const TransformationParameter& param,Phase phase) : param_(param), phase_(phase)
+    1)  template<typename Dtype> DataTransformer<Dtype>::
+    DataTransformer(const TransformationParameter& param,Phase phase) : param_(param), phase_(phase)
 
-      + ,aug_( param) {
+        + ,aug_( param) {
 
-  2)  template<typename Dtype> void DataTransformer<Dtype>::
-  Transform(const cv::Mat& cv_img,Blob<Dtype>* transformed_blob){ 
+    2)  template<typename Dtype> void DataTransformer<Dtype>::
+     Transform(const cv::Mat& cv_img,Blob<Dtype>* transformed_blob){ 
 
-    ...
+      ...
 
-    +  if ( phase_ == TRAIN) {
+      +  if ( phase_ == TRAIN) {
 
-    +  aug_.Transform(cv_cropped_img);
+      +  aug_.Transform(cv_cropped_img);
 
-    +  }
+      +  }
 
-   CHECK(cv_cropped_img.data);
+    CHECK(cv_cropped_img.data);
 
 4  modify src/proto/caffe.proto
 
-  1)  message TransformationParameter{
+    1)  message TransformationParameter{
 
       ...
 
@@ -135,16 +135,16 @@ layer
 
 5  compile
 
-  1)  cd build
+    1)  cd build
 
-  2)  cmake ..
+    2)  cmake ..
 
-  3)  make -j8
+    3)  make -j8
 
 # Acknowledgment
 
-  the implementation of rotation is based on @kevinlin311tw 's caffe-augmentation
+    the implementation of rotation is based on @kevinlin311tw 's caffe-augmentation
 
 # PS:
 
-  if u think its nice project, just Star it!
+    if u think its nice project, just Star it!
