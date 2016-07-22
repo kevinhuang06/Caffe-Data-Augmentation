@@ -147,4 +147,4 @@ Now, the methods in the utils include :
 
 # PS:
 
-    if u think it's nice project, just Star it!
+    if u think it's a nice project, just Star it!
