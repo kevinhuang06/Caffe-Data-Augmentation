@@ -12,13 +12,13 @@ Data augmentation is the best
 
 Now, the methods in the utils include :
 
-1) Color
+  1) Color
 
-2) Contrast
+  2) Contrast
 
-3) Brightness
+  3) Brightness
 
-4) Rotation 
+  4) Rotation 
 
 # how to use
 
@@ -43,7 +43,9 @@ layer
   {
     mirror: true
     
-    crop_size: 227 mean_file: "imagenet_mean.binaryproto"
+    crop_size: 227
+    
+    mean_file: "imagenet_mean.binaryproto"
     
     color: true
     
