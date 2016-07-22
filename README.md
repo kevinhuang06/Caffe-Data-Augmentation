@@ -1,20 +1,14 @@
-@@
- -1,2 +1,93 @@
+@@ -1,2 +1,93 @@
 
-#
- Caffe-Data-Augmentation
+# Caffe-Data-Augmentation
 
-Image
- data augmentation util for Caffe
+Image data augmentation util for Caffe
 
-#
- Introduction
+# Introduction
 
 Data augmentation is the best
- trick when you are training a deep network. the project implements several frequently-used methods for image task. Caffe's prefetching method makes my method costless with time. During training, u can try combinations of multiple diffrent processing , they
- do boost the performance. the most important things is that it is easy to set up and do any modification by yourself.
-#
- Realtime data augmentation utils
+  trick when you are training a deep network. the project implements several frequently-used methods for image task. Caffe's prefetching method makes my method costless with time. During training, u can try combinations of multiple diffrent processing , they do boost the performance. the most important things is that it is easy to set up and do any modification by yourself.
+# Realtime data augmentation utils
 
 Now, the methods in the utils include :
 
@@ -29,170 +23,126 @@ Now, the methods in the utils include :
 # how to use
 
 layer
- {
+{
 
-name: "data"
+  name: "data"
+  
+  type: "ImageData"
+  
+  top:  "data"
+  
+  top: "label"
+  
+  include {
+  
+    phase: TRAIN
+    
+  }
+  
+  transform_param
+  {
+    mirror: true
+    
+    crop_size: 227 mean_file: "imagenet_mean.binaryproto"
+    
+    color: true
+    
+    contrast: true
+    
+    brightness: true
+    
+    rotation_angle_interval: 10
+    
+    # show_augment_info: true
+    
+    # dir_to_save_augmented_imgs: "path"
+    
+  }
 
-type:
- "ImageData"
+  image_data_param
+  
+  {
 
-top:
- "data"
+    source: "/home/your/image/list.txt"
 
-top: "label"
+    batch_size: 32
 
-include {
+    shuffle:true
 
-phase: TRAIN
+    new_height:256
 
+    new_width: 256
+    
+  }
+  
 }
 
-transform_param
- {
+# how to setup
 
-mirror: true
- crop_size: 227 mean_file:
- "imagenet_mean.binaryproto"
+1  add two files
 
-color:
- true
+  1)  data_augment.hpp --> include/caffe/util/
 
-contrast:
- true
+  2)  data_augment.cpp --> src/caffe/util/
 
-brightness:
- true
+2  modify include/caffe/data_transformer.hpp
 
-rotation_angle_interval:
- 10
+  1)  #include "caffe/util/data_augment.hpp"
 
-# check if the methods works,
- just turn on 2 switchs below#
+  2)  protected: 
 
-#
- show_augment_info: true
+      +  DataAugmenter<Dtype> aug_;
 
-#
- dir_to_save_augmented_imgs
- : "path"
+3  modify src/caffe/data_transformer.cpp
 
-}
+  1)  template<typename Dtype> DataTransformer<Dtype>::
+  DataTransformer(const TransformationParameter& param,Phase phase) : param_(param), phase_(phase)
 
-image_data_param
- {
+      + ,aug_( param) {
 
-source:
- "/home/your/image/list.txt"
+  2)  template<typename Dtype> void DataTransformer<Dtype>::
+  Transform(const cv::Mat& cv_img,Blob<Dtype>* transformed_blob){ 
 
-batch_size:
- 32
+    ...
 
-shuffle:
- true
+    +  if ( phase_ == TRAIN) {
 
-new_height:
- 256
+    +  aug_.Transform(cv_cropped_img);
 
-new_width: 256
+    +  }
 
-}}
+   CHECK(cv_cropped_img.data);
 
-#how to setup
+4  modify src/proto/caffe.proto
 
-1
- add two files
+  1)  message TransformationParameter{
 
-1)
- data_augment.hpp --> include/caffe/util/
+      ...
 
-2)
- data_augment.cpp --> src/caffe/util/
+      +  optional bool color = 9 [default = false];
 
-2
- modify include/caffe/data_transformer.hpp
+      +  optional bool contrast = 10 [default = false];
 
-1)
- #include 
+      +  optional bool brightness = 11 [default = false];
 
-...
+      +  optional int32 rotation_angle_interval = 12 [default = 0];
 
-+
-#
-include "caffe/util/data_augment.hpp"
+      +  optional bool show_augment_info = 13 [default = false];
 
-2)
- protected: 
+      +  optional string dir_to_save_augmented_imgs = 15;
 
-...
+5  compile
 
-+
-DataAugmenter<Dtype> aug_;
+  1)  cd build
 
-3
- modify src/caffe/data_transformer.cpp
+  2)  cmake ..
 
-1)
- template<typename Dtype>
+  3)  make -j8
 
-DataTransformer<Dtype>::DataTransformer(const TransformationParameter& param,Phase phase) : param_(param), phase_(phase)
+# Acknowledgment
 
-+
-,aug_( param) {
+  the implementation of rotation is based on @kevinlin311tw 's caffe-augmentation
 
-2) template<typename Dtype> void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,Blob<Dtype>* transformed_blob){ 
+# PS:
 
-...
-
-+
-if ( phase_ == TRAIN) {
-
-+
-aug_.Transform(cv_cropped_img);
-
-+
-}
-
-CHECK(cv_cropped_img.data);
-
-4
- modify src/proto/caffe.proto
-
-1) message TransformationParameter
- {
-
-...
-
-+
-optional bool color = 9 [default = false];
-
-+
-optional bool contrast = 10 [default = false];
-
-+
-optional bool brightness = 11 [default = false];
-
-+
-optional int32 rotation_angle_interval = 12 [default = 0];
-
-+
-optional bool show_augment_info = 13 [default = false];
-
-+
-optional string dir_to_save_augmented_imgs = 15 [default = false];
-
-5
- compile
-
-cd build
-
-cmake ..
-
-make -j8
-
-#Acknowledgment
-
-the implementation of rotation is based on @kevinlin311tw 's caffe-augmentation
-
-#PS:
-
-if u think its nice project, just Star it!
+  if u think its nice project, just Star it!
