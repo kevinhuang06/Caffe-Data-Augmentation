@@ -20,65 +20,6 @@ Now, the methods in the utils include :
 
   4) Rotation 
 
-# how to use
-
-  layer
-  {
-
-    name: "data"
-  
-    type: "ImageData"
-  
-    top:  "data"
-  
-    top: "label"
-  
-    include {
-  
-      phase: TRAIN
-      
-    }
-  
-    transform_param
-    {
-      mirror: true
-    
-      crop_size: 227
-    
-      mean_file: "imagenet_mean.binaryproto"
-    
-      color: true
-    
-      contrast: true
-    
-      brightness: true
-    
-      rotation_angle_interval: 10
-    
-      # show_augment_info: true
-    
-      # dir_to_save_augmented_imgs: "path"
-    
-  }
-
-    image_data_param
-  
-    {
-
-      source: "/home/your/image/list.txt"
-
-      batch_size: 32
-
-      shuffle:true
-
-      new_height:256
-
-      new_width: 256
-    
-    }
-  
-}
-
 # how to setup
 
 1  add two files
@@ -140,6 +81,65 @@ Now, the methods in the utils include :
     2)  cmake ..
 
     3)  make -j8
+
+# how to use
+
+  layer
+  {
+
+    name: "data"
+  
+    type: "ImageData"
+  
+    top:  "data"
+  
+    top: "label"
+  
+    include {
+  
+      phase: TRAIN
+      
+    }
+  
+    transform_param
+    {
+      mirror: true
+    
+      crop_size: 227
+    
+      mean_file: "imagenet_mean.binaryproto"
+    
+      color: true
+    
+      contrast: true
+    
+      brightness: true
+    
+      rotation_angle_interval: 10
+    
+      # show_augment_info: true
+    
+      # dir_to_save_augmented_imgs: "path"
+    
+  }
+
+    image_data_param
+  
+    {
+
+      source: "/home/your/image/list.txt"
+
+      batch_size: 32
+
+      shuffle:true
+
+      new_height:256
+
+      new_width: 256
+    
+    }
+  
+}
 
 # Acknowledgment
 
