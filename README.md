@@ -30,7 +30,7 @@ Now, the methods in the utils include :
 
 2  modify include/caffe/data_transformer.hpp
 
-    1) + #include "caffe/util/data_augment.hpp"
+    1) + #include "caffe/util/data_augmenter.hpp"
 
     2)  protected: 
 
